@@ -26,9 +26,11 @@ const URL_EXPIRATION_SECONDS = 300;
 const suffix_start = 1; 
 const suffix_end = 10;
 
+
+
 // Main Lambda entry point
 exports.handler = async  (event) => {
-  return await createArtifact(event)
+  return await createArtifact(event);
 };
 
 const createArtifact = async function (event) {
@@ -47,13 +49,17 @@ const createArtifact = async function (event) {
 
     // Store in a variable called partition a random integer between suffix_start and suffix_end
     let partition = Math.floor(Math.random() * (suffix_end - suffix_start + 1)) + suffix_start;
+    
+    let filename = metaData["Metadata"]['original_name'].split("/");
+    
+    filename = filename[filename.length-1];
 
 
     let item = {
       shardId: {S: `${metaData["Metadata"]['tenantid']}-${partition}`},
       artifactId: {S: uuid4()},
       data_type: {S: metaData["Metadata"]['data_type']},
-      name: {S: s3Params.Key},
+      name: filename,
       username: {S: metaData["Metadata"]['username']},
       original_name: {S: metaData["Metadata"]['original_name']},
       path: {S: s3Params.Key},
@@ -67,9 +73,6 @@ const createArtifact = async function (event) {
     let response = await ddb.putItem(params).promise();
     console.log("RESPONSE: ", response);
     
-    let filename = metaData["Metadata"]['original_name'].split("/");
-    
-    filename = filename[filename.length-1];
     
     let messageJson = {
       "s3Name": s3Params.Bucket,
@@ -80,7 +83,10 @@ const createArtifact = async function (event) {
             "username": `${metaData["Metadata"]['username']}`
       }
     };
-    await publishToSNSTopic(messageJson);
+     
+    const responseSNS = await publishToSNSTopic(messageJson);
+    console.log("RESPONSE SNS: ", responseSNS);
+    
   }
   
   return records;
@@ -91,7 +97,8 @@ const publishToSNSTopic = async function(messageJson){
     
     var params = {
         Message: JSON.stringify(messageJson), 
-        TopicArn: "arn:aws:sns:eu-north-1:640339490701:s3-event"
+        TopicArn: "arn:aws:sns:eu-west-1:918199069718:development-binary-uploaded"
     };
-    await sns.publish(params).promise();
+    const response = await sns.publish(params).promise();
+    return response;
   };
