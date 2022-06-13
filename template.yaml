@@ -105,9 +105,11 @@ Resources:
               - s3:List*
               - s3-object-lambda:Get*
               - s3-object-lambda:List*
+              - sns:*
             Resource:
               - !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/Artifact*"
               - !Join ["/", [!Join [":::", ["arn:aws:s3", !Ref S3UploadBucket] ], "*"] ]
+              - !Ref "arn:aws:sns:*"
 
   ## S3 bucket
   S3UploadBucket:
