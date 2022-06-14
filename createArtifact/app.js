@@ -76,8 +76,8 @@ const createArtifact = async function (event) {
     
     let messageJson = {
       "s3Name": s3Params.Bucket,
-      "dowloadKey" : s3Params.Key,
-      "uploadKey" : `digests/${metaData["Metadata"]['tenantid']}/${filename}`,
+      "downloadKey" : s3Params.Key,
+      "uploadPrefix" : `digests/${metaData["Metadata"]['tenantid']}/`,
       "outgoingMetadata" : {
             "tenant-id":  `${metaData["Metadata"]['tenantid']}`,
             "username": `${metaData["Metadata"]['username']}`
