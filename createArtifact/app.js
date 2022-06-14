@@ -50,19 +50,18 @@ const createArtifact = async function (event) {
     // Store in a variable called partition a random integer between suffix_start and suffix_end
     let partition = Math.floor(Math.random() * (suffix_end - suffix_start + 1)) + suffix_start;
     
-    let filename = metaData["Metadata"]['original_name'].split("/");
-    
-    filename = filename[filename.length-1];
+    let filename = s3Params.Key.substring(s3Params.Key.lastIndexOf('/') + 1);
+    let path = s3Params.Key.substring(0, s3Params.Key.lastIndexOf('/') + 1);
 
 
     let item = {
       shardId: {S: `${metaData["Metadata"]['tenantid']}-${partition}`},
       artifactId: {S: uuid4()},
       data_type: {S: metaData["Metadata"]['data_type']},
-      name: filename,
+      name: {S: filename},
       username: {S: metaData["Metadata"]['username']},
       original_name: {S: metaData["Metadata"]['original_name']},
-      path: {S: s3Params.Key},
+      path: {S: path},
       size: {N: `${metaData["ContentLength"]}`},
     };
     console.log("ITEM: ", item);

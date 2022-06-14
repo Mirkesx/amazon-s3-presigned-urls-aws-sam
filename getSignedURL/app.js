@@ -35,7 +35,7 @@ const getUploadURL = async function(event) {
   const username = params.username;
   const tenantId = params.tenantId;
   const randomID = parseInt(Math.random() * 10000000);
-  const Key = `${tenantId}/artifacts/${username}-${randomID}.${extension}`;
+  const Key = `${tenantId}/artifacts/${username}-${randomID}.${extension}`; //TODO: replace it with uuid4
 
   // Get signed URL from S3
   const s3Params = {
